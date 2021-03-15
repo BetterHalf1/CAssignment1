@@ -1,8 +1,9 @@
 
 /****************************************************************
- File: IntQueue.c
+ File: IntStack.c
+ Derived from IntQueue.c
  ----------------
- This file implements the IntQueue interface given in IntQueue.h.
+ This file implements the IntStack interface given in IntStack.h.
  ****************************************************************/
 
 #include <stdlib.h>
@@ -11,8 +12,7 @@
 
 
 /****************************************************************
- The queue is implemented as a linked list of nodes, each
- containing an int queue entry and a pointer to the next node.
+ Stack implemented as nodes derived from IntQueue
 */
 struct node {
 	int data;
@@ -21,16 +21,20 @@ struct node {
 typedef struct node Node;
 
 /****************************************************************
- The state of the queue is encapsulated in this struct, which
- contains a pointer to the head and tail of the queue. The IntQueue
- ADT is a pointer to a struct of this type.
+ The state of the stack is encapsulated in this struct, which
+ contains a pointer to the head and tail of the queue. firstEmpty is
+ used to avoid repetitive print statements for when stack is empty.
 */
 struct intstack {
 	Node *head;
 	Node *tail;
+	int firstEmpty;
 };
 
-/*****************************************************************/
+/****************************************************************
+	Initializes Stack
+	*/
+
 IntStack createStack()
 {
 
@@ -43,24 +47,27 @@ IntStack createStack()
 
 	stack->head = NULL;
 	stack->tail = NULL;
+	stack->firstEmpty = 1;
 
 	return stack;
 }
 
-/*****************************************************************/
+/****************************************************************
+	Returns true if stack is empty, false otherwise.
+*/
 int isEmpty (IntStack stack)
 {
 	return (stack->head == NULL) && (stack->tail == NULL);
 }
 
 /****************************************************************
- Implementation note: Each dequeue both removes the element from
- the queue and deallocates the node. The last call to free()
- deallocates the intqueue struct.
+ Implementation note: Each pops the first element in a stack
+  and deallocates the node. The last call to free()
+ deallocates the intStack.
 */
 void deleteStack(IntStack stack)
 {
-
+	stack->firstEmpty = 2;
 	do {
 		removeStart(stack);
 	} while (!isEmpty(stack));
@@ -70,8 +77,7 @@ void deleteStack(IntStack stack)
 
 /****************************************************************
  Implementation note: This is a private function for creating
- an intqueue node pointer with given data contents. It's only
- here to make enqueue() a little easier to read.
+ an intStack node pointer with given data contents.
 */
 static Node *createNode(int data)
 {
@@ -89,13 +95,16 @@ static Node *createNode(int data)
 }
 
 /****************************************************************
- Implementation note: Since an empty queue just consists of a
+ Implementation note: Since an empty stack just consists of a
  NULL head and tail, it is necessary to distinguish that as a
- special case. A similar comment holds for dequeue.
+ special case.
 */
 void addStart(IntStack stack, int data)
 {
 	Node *node = createNode(data);
+
+	stack->firstEmpty = 1;
+
 	if (!isEmpty(stack)) {
 		node->next = stack->head;
 		stack->head = node;
@@ -116,6 +125,11 @@ int removeStart(IntStack stack)
 
 	if (stack->head == NULL) {
 		// Queue is empty
+		if (stack->firstEmpty == 2){
+			return 0;
+		}
+		printf("pop from empty stack failed.\n");
+
 		return 0;
 	}
 	else {
@@ -138,7 +152,11 @@ void printStack (IntStack stack)
 	Node *current;
 
 	if (isEmpty(stack)) {
-		printf("Attempt to print empty stack failed.\n");
+		if(stack->firstEmpty == 1){
+		printf("Empty stack.\n");
+		stack->firstEmpty = 0;
+	}
+
 		return;
 	}
 

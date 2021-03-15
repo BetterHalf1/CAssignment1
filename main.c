@@ -2,9 +2,9 @@
 /****************************************************************
  File: main.c
  ------------
- A main program to demonstrate the IntQueue ADT.
- It enqueues the numbers 0 through 99 and then dequeues
- them.
+ Assignment 1
+ Author: Kenneth Tang
+ Derived from CS 170
 */
 
 #include <stdio.h>
@@ -13,43 +13,51 @@
 
 int main(void)
 {
-	char ch;
-	printf("Enter 'p' to print, 'q' to quit: ");
-	int ret = scanf("%c", &ch);
-	if (ch == 'q'){
-		printf("Quitting program\n");
-		exit(0);
-	}/*
-	if (ret = 1) {
-		printf("You entered %c\n", ch);
-	}
-	*/
-	int i;
+	char myString[50];
+	int myint;
+	int loop = 1;
 	int data;
 	IntStack stack = createStack();
 
-	for (i=0; i<5; i++) {
-		data = i;
-		printf("Adding to stack, %d\n", data);
-		addStart(stack, data);
 
+	while (loop == 1)
+{
+	printf("(i)nsert#, (p)op, (q)uit:  ");
+
+	scanf("%s", &myString);
+
+	if(myString[0] == 'p') {
+
+		removeStart(stack);
 		printStack(stack);
 
-	}
 
-	if (!isEmpty(stack))
-	{
-		while (!isEmpty(stack))
-		{
-			data = removeStart(stack);
-			printf("Popped %d\n", data);
+
+	}	else if(myString[0] == 'i'){
+
+		int ret = sscanf(myString + 1, "%d", &data);
+		if(ret == 1){
+			addStart(stack, data);
 			printStack(stack);
 		}
+		else{
+			printf("Number not recognized.\n");
+		}
+
+
 	}
-	else
-		printf("Stack is empty.\n");
+	else if(myString[0] == 'q'){
+		loop = 0;
+	}
+	else{
+		printf("Input not recognized.\n");
+	}
 
+
+}
 	deleteStack(stack);
+	printf("\n");
+	exit(0);
+//*********************************
 
-	return 0;
 }
